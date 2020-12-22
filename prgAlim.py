@@ -1,6 +1,7 @@
 import pygame
 import os
 from random import randint
+
 WIDTH = 500
 HEIGHT = 500
 SCREEN = pygame.display.set_mode((HEIGHT, WIDTH))
@@ -25,19 +26,21 @@ class Bomb(pygame.sprite.Sprite):
                 if pos[1] >= self.rect.top and pos[1] <= self.rect.bottom:
                     self.image = pygame.image.load(f'{image_folder}/boom.png')
                     self.is_boom = True
+                    self.rect.top = self.rect.top - 30
+                    self.rect.left = self.rect.left - 30
+
 
 entity = pygame.sprite.Group()
-for _ in range(10):
-    bomb = Bomb([randint(120,380),randint(120,380)])
+for _ in range(15):
+    bomb = Bomb([randint(70, 400), randint(70, 400)])
     entity.add(bomb)
-
 
 if __name__ == '__main__':
     pygame.init()
     bg = pygame.Surface((WIDTH, HEIGHT))
     tick = pygame.time.Clock()
     bg.fill(black_color)
-    posit = 0,0
+    posit = 0, 0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

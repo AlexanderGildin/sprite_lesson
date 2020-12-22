@@ -22,6 +22,7 @@ if __name__ == '__main__':
     pygame.init()
     bg = pygame.Surface((WIDTH,HEIGHT))
     ar = Arrow()
+    time = pygame.time.Clock()
     bg.fill(black_color)
     while True:
         for event in pygame.event.get():
@@ -36,6 +37,7 @@ if __name__ == '__main__':
             SCREEN.blit(ar.image, ar.rect)
         else:
             pygame.mouse.set_visible(True)
+        time.tick(144)
         pygame.display.flip()
 
 
