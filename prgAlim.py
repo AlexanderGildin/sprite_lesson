@@ -1,55 +1,120 @@
 import pygame
+from pygame import *
 import os
-from random import randint
 
-WIDTH = 500
-HEIGHT = 500
-SCREEN = pygame.display.set_mode((HEIGHT, WIDTH))
-PATH = os.path.dirname(__file__)
-image_folder = os.path.join(PATH, 'data')
-is_blit = False
-black_color = (0, 0, 0)
+self_path = os.path.dirname(__file__)
+images = os.path.join(self_path, 'data')
+BLOCK_SIZE = 50
+WIDTH = 550
+HEIGHT = 550
+SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+LEVEL = [
+    '...###.....',
+    '..##.#.####',
+    '.##..###..#',
+    '##........#',
+    '#...@..#..#',
+    '###..###..#',
+    '..#..#....#',
+    '.##.##.#.##',
+    '.#......##.',
+    '.#.....##..',
+    '.#######...',
+]
 
 
-class Bomb(pygame.sprite.Sprite):
-    def __init__(self, pos):
-        pygame.sprite.Sprite.__init__(self)
-        self.is_boom = False
-        self.image = pygame.image.load(f'{image_folder}/bomb.png')
+class Void(sprite.Sprite):
+    def __init__(self, row, col):
+        sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(f'{images}/grass.png')
+        self.rect = Rect(row, col, BLOCK_SIZE, BLOCK_SIZE)
+
+
+class Border(sprite.Sprite):
+    def __init__(self, row, col):
+        sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(f'{images}/box.png')
+        self.rect = Rect(row, col, BLOCK_SIZE, BLOCK_SIZE)
+
+
+class Character(sprite.Sprite):
+    def __init__(self, row, col):
+        sprite.Sprite.__init__(self)
+        self.bg = Void(row, col)
+        self.image = pygame.image.load(f'{images}/mar.png')
         self.rect = self.image.get_rect()
-        self.rect.left = pos[0]
-        self.rect.top = pos[1]
+        self.rect.x, self.rect.y = row + 13, col + 5
 
-    def update(self, pos):
-        if not self.is_boom:
-            if pos[0] >= self.rect.left and pos[0] <= self.rect.right:
-                if pos[1] >= self.rect.top and pos[1] <= self.rect.bottom:
-                    self.image = pygame.image.load(f'{image_folder}/boom.png')
-                    self.is_boom = True
-                    self.rect.top = self.rect.top - 30
-                    self.rect.left = self.rect.left - 30
+    def update(self):
+        global left, right, down, up
+        if left:
+            cah.rect.x -= BLOCK_SIZE
+            self.collision()
+            left = False
+        elif right:
+            cah.rect.x += BLOCK_SIZE
+            self.collision()
+            right = False
+        elif up:
+            cah.rect.y -= BLOCK_SIZE
+            self.collision()
+            up = False
+        elif down:
+            cah.rect.y += BLOCK_SIZE
+            self.collision()
+            down = False
+
+    def collision(self):
+        for a in entity:
+            if sprite.collide_rect(self, a):
+                if type(a) == Border:
+                    if left:
+                        cah.rect.x += BLOCK_SIZE
+                    elif right:
+                        cah.rect.x -= BLOCK_SIZE
+                    elif up:
+                        cah.rect.y += BLOCK_SIZE
+                    elif down:
+                        cah.rect.y -= BLOCK_SIZE
 
 
-entity = pygame.sprite.Group()
-for _ in range(15):
-    bomb = Bomb([randint(70, 400), randint(70, 400)])
-    entity.add(bomb)
-
+entity = sprite.Group()
+x, y = 0, 0
+for i in LEVEL:
+    for j in i:
+        if j == '.':
+            k = Void(x, y)
+            entity.add(k)
+        elif j == '#':
+            k = Border(x, y)
+            entity.add(k)
+        elif j == '@':
+            x_char, y_char = x, y
+        x += BLOCK_SIZE
+    y += BLOCK_SIZE
+    x = 0
+cah = Character(x_char, y_char)
+entity.add(cah)
 if __name__ == '__main__':
     pygame.init()
-    bg = pygame.Surface((WIDTH, HEIGHT))
-    tick = pygame.time.Clock()
-    bg.fill(black_color)
-    posit = 0, 0
+    left, right, up, down = False, False, False, False
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                posit = event.pos
-        tick.tick(30)
-        SCREEN.blit(bg, (0, 0))
-        entity.update(posit)
-        for i in entity:
-            SCREEN.blit(i.image, i.rect)
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    up = True
+                elif event.key == pygame.K_DOWN:
+                    down = True
+                elif event.key == pygame.K_RIGHT:
+                    right = True
+                elif event.key == pygame.K_LEFT:
+                    left = True
+        cah.update()
+        for k in entity:
+            if type(k) == Character:
+                SCREEN.blit(k.bg.image, k.bg.rect)
+                SCREEN.blit(k.image, k.rect)
+            SCREEN.blit(k.image, k.rect)
         pygame.display.flip()
