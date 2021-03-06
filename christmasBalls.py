@@ -5,16 +5,17 @@ import random
 import time
 
 pygame.init()
-size = width, height = 470, 800
+size = width, height = 480, 800
 screen = pygame.display.set_mode(size)
 state_mode = 0  # 0 - перед началом игры, 1 - уже щелкали мышкой, 2 - музыка
 co = [(0, 0)] * 7  # массив координат шариков для проверки на выстроенность в линию
 start_time_music = time.time()
 number_music = 5
-debug = True
+music_volume = 0.5
+debug = False
 
 class Math_line:
-    delta_exp = 20  # допустимая погршешность при выстраивании линии
+    delta_exp = 30  # допустимая погршешность при выстраивании линии
 
     @staticmethod
     def get_line(xl, yl, xr, yr):
@@ -41,7 +42,8 @@ class My_toy(pygame.sprite.Sprite):
         self.delta_y = (random.randint(6, 20)) / 10
         if self.rect.y % 2 == 0:
             self.delta_y *= -1
-        print(self.delta_y)
+        if debug:
+            print(self.delta_y)
 
     def update(self, *args, **kwargs):
         if args and args[0].type == pygame.MOUSEBUTTONDOWN \
@@ -85,6 +87,21 @@ for i in range(10, 400, 62):
     sprite = My_toy(random.choice(["picg1.png", "picg2.png", "picg3.png"]), i)
     all_sprites.add(sprite)
 
+if not os.path.isfile('data/d0.mp3'):
+    print("Файл d0.mp3 не найден")
+    sys.exit()
+if not os.path.isfile('data/d1.mp3'):
+    print("Файл d1.mp3 не найден")
+    sys.exit()
+if not os.path.isfile('data/d2.mp3'):
+    print("Файл d2.mp3 не найден")
+    sys.exit()
+if not os.path.isfile('data/d3.mp3'):
+    print("Файл d3.mp3 не найден")
+    sys.exit()
+if not os.path.isfile('data/d4.mp3'):
+    print("Файл d4.mp3 не найден")
+    sys.exit()
 vin = load_image("vin.png")
 startfon = load_image("startfon.jpg")
 fon = load_image("img1v.jpg")
@@ -98,6 +115,10 @@ while begining:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             doing = False
+            pygame.quit()
+        if event.type == pygame.KEYDOWN and event.key == 27:
+            doing = False
+            pygame.quit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             begining = False
 
@@ -106,6 +127,16 @@ tick = pygame.time.Clock()
 while doing:
     # screen.fill((0, 0, 0))
     for event in pygame.event.get():
+        if debug:
+            print(event)
+        if event.type == pygame.KEYDOWN and event.key == 27:
+            doing = False
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+            music_volume = min(1, music_volume + 0.1)
+            pygame.mixer.music.set_volume(music_volume)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+            music_volume = max(0, music_volume - 0.1)
+            pygame.mixer.music.set_volume(music_volume)
         if event.type == pygame.QUIT:
             doing = False
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -131,31 +162,27 @@ while doing:
     if state_mode == 2 and abs(start_time_music - time.time()) > 5:
         state_mode = 1
     if state_mode == 1:
-        if Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[2][0], co[2][1]) and Math_line.one_line(
-                co[0][0], co[0][1], co[1][0], co[1][1], co[3][0], co[3][1]):
+        if Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[2][0], co[2][1]) \
+                and Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[3][0], co[3][1]) \
+                and Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[4][0], co[4][1]):
             start_time_music = time.time()
             pygame.mixer.music.load(random.choice(["data/d0.mp3", "data/d3.mp3"]))
             pygame.mixer.music.play(-1)
             # pygame.mixer.music.set_volume(0.1)
             state_mode = 2
-        elif Math_line.one_line(co[1][0], co[1][1],co[2][0], co[2][1],co[3][0], co[3][1]) and Math_line.one_line(
-                co[1][0], co[1][1], co[2][0], co[2][1], co[4][0], co[4][1]):
+        elif Math_line.one_line(co[1][0], co[1][1],co[2][0], co[2][1],co[3][0], co[3][1]) \
+                and Math_line.one_line(co[1][0], co[1][1], co[2][0], co[2][1], co[4][0], co[4][1])\
+                and Math_line.one_line(co[1][0], co[1][1], co[2][0], co[2][1], co[5][0], co[5][1]):
             start_time_music = time.time()
             pygame.mixer.music.load(random.choice(["data/d1.mp3", "data/d4.mp3"]))
             pygame.mixer.music.play(-1)
             # pygame.mixer.music.set_volume(0.1)
             state_mode = 2
-        elif Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[4][0], co[4][1]) and Math_line.one_line(
-                co[2][0], co[2][1], co[3][0], co[3][1], co[5][0], co[5][1]):
+        elif Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[4][0], co[4][1]) \
+                and Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[5][0], co[5][1]) \
+                and Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[6][0], co[6][1]):
             start_time_music = time.time()
-            pygame.mixer.music.load(random.choice(["data/d0.mp3", "data/d2.mp3"]))
-            pygame.mixer.music.play(-1)
-            # pygame.mixer.music.set_volume(0.1)
-            state_mode = 2
-        elif Math_line.one_line(co[3][0], co[3][1], co[4][0], co[4][1],co[5][0], co[5][1]) and Math_line.one_line(
-                co[3][0], co[3][1], co[4][0], co[4][1], co[6][0], co[6][1]):
-            start_time_music = time.time()
-            pygame.mixer.music.load(random.choice(["data/d3.mp3", "data/d4.mp3"]))
+            pygame.mixer.music.load(random.choice(["data/d1.mp3", "data/d2.mp3"]))
             pygame.mixer.music.play(-1)
             # pygame.mixer.music.set_volume(0.1)
             state_mode = 2
