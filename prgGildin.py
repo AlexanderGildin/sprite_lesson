@@ -35,6 +35,7 @@ class My_toy(pygame.sprite.Sprite):
             self.delta_y = -(random.randint(6, 20)) / 10
         self.rect.y = self.y
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
@@ -87,4 +88,3 @@ while doing:
     pygame.display.flip()
     all_sprites.update()
 pygame.quit()
-
