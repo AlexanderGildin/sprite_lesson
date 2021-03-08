@@ -93,20 +93,20 @@ for i in range(10, 400, 62):
     sprite = My_toy(random.choice(["picg1.png", "picg2.png", "picg3.png"]), i)
     all_sprites.add(sprite)
 
-if not os.path.isfile('data/d0.mp3'):
-    print("Файл d0.mp3 не найден")
+if not os.path.isfile('data/d0.dat'):
+    print("Файл d0.dat не найден")
     sys.exit()
-if not os.path.isfile('data/d1.mp3'):
-    print("Файл d1.mp3 не найден")
+if not os.path.isfile('data/d1.dat'):
+    print("Файл d1.dat не найден")
     sys.exit()
-if not os.path.isfile('data/d2.mp3'):
-    print("Файл d2.mp3 не найден")
+if not os.path.isfile('data/d2.dat'):
+    print("Файл d2.dat не найден")
     sys.exit()
-if not os.path.isfile('data/d3.mp3'):
-    print("Файл d3.mp3 не найден")
+if not os.path.isfile('data/d3.dat'):
+    print("Файл d3.dat не найден")
     sys.exit()
-if not os.path.isfile('data/d4.mp3'):
-    print("Файл d4.mp3 не найден")
+if not os.path.isfile('data/d4.dat'):
+    print("Файл d4.dat не найден")
     sys.exit()
 vin = load_image("vin.png")
 startfon = load_image("startfon.jpg")
@@ -176,7 +176,7 @@ while doing:
                 and Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[3][0], co[3][1]) \
                 and Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[4][0], co[4][1]):
             start_time_music = time.time()
-            pygame.mixer.music.load(random.choice(["data/d0.mp3", "data/d3.mp3"]))
+            pygame.mixer.music.load(random.choice(["data/d0.dat", "data/d3.dat"]))
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(music_volume)
             series_number = 0
@@ -185,7 +185,7 @@ while doing:
                 and Math_line.one_line(co[1][0], co[1][1], co[2][0], co[2][1], co[4][0], co[4][1])\
                 and Math_line.one_line(co[1][0], co[1][1], co[2][0], co[2][1], co[5][0], co[5][1]):
             start_time_music = time.time()
-            pygame.mixer.music.load(random.choice(["data/d1.mp3", "data/d4.mp3"]))
+            pygame.mixer.music.load(random.choice(["data/d1.dat", "data/d4.dat"]))
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(music_volume)
             series_number = 1
@@ -194,7 +194,7 @@ while doing:
                 and Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[5][0], co[5][1]) \
                 and Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[6][0], co[6][1]):
             start_time_music = time.time()
-            pygame.mixer.music.load(random.choice(["data/d1.mp3", "data/d2.mp3"]))
+            pygame.mixer.music.load(random.choice(["data/d1.dat", "data/d2.dat"]))
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(music_volume)
             series_number = 2
