@@ -5,27 +5,33 @@ import random
 import time
 
 pygame.init()
+pygame.display.set_caption('ChristmasBalls')
 size = width, height = 480, 800
 screen = pygame.display.set_mode(size)
-state_mode = 0  # 0 - перед началом игры, 1 - уже щелкали мышкой, 2 - музыка
+state_mode = 0  # 0 - перед началом игры, 1 - пользователь начал игру, 2 - звучит музыка
+# Если пользователь вообще на начинал щелкать мышкой по елочным укашениям,
+# выстраивание шариков в ровную линию будем считать случайным и включать музыку не будем
 co = [(0, 0)] * 7  # массив координат шариков для проверки на выстроенность в линию
 start_time_music = time.time()
 number_music = 5
-music_volume = 0.5
+music_volume = 0.2
 debug = False
+key_ecs = 27
 
 class Math_line:
     delta_exp = 30  # допустимая погршешность при выстраивании линии
 
     @staticmethod
-    def get_line(xl, yl, xr, yr):
+    def get_line(xl, yl, xr, yr): # функция восстанавливает уровнение прямой
+        # в общей форме, используя идею векторов
         a = yl - yr
         b = xr - xl
         c = -(a * xl + b * yl)
         return (a, b, c)
 
     @staticmethod
-    def one_line(xl, yl, xr, yr, xn, yn):
+    def one_line(xl, yl, xr, yr, xn, yn): # функция проверяет лежат ли три точки
+        # на одной прямой с допустимой погрешностью Math_line.delta_exp
         a, b, c = Math_line.get_line(xl, yl, xr, yr)
         yp = (-c - a * xn) / b
         return abs(yn - yp) <= Math_line.delta_exp
@@ -116,7 +122,7 @@ while begining:
         if event.type == pygame.QUIT:
             doing = False
             pygame.quit()
-        if event.type == pygame.KEYDOWN and event.key == 27:
+        if event.type == pygame.KEYDOWN and event.key == key_ecs:
             doing = False
             pygame.quit()
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -129,7 +135,7 @@ while doing:
     for event in pygame.event.get():
         if debug:
             print(event)
-        if event.type == pygame.KEYDOWN and event.key == 27:
+        if event.type == pygame.KEYDOWN and event.key == key_ecs:
             doing = False
         if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
             music_volume = min(1, music_volume + 0.1)
@@ -161,6 +167,10 @@ while doing:
         k += 1
     if state_mode == 2 and abs(start_time_music - time.time()) > 5:
         state_mode = 1
+    # Режим state_mode = 2 не дает возможность защитывать одно и то-же выстраивание
+    # линии нескольео раз. Данная переменная позволяет сделать 5 секундную паузу перед следующей проверкой
+    # на сформированность линии. В это время запустится музыкальный фрагмент.
+    # Он будет звучать минимум 5 секунд перед запуском следующего.
     if state_mode == 1:
         if Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[2][0], co[2][1]) \
                 and Math_line.one_line(co[0][0], co[0][1], co[1][0], co[1][1], co[3][0], co[3][1]) \
@@ -168,7 +178,8 @@ while doing:
             start_time_music = time.time()
             pygame.mixer.music.load(random.choice(["data/d0.mp3", "data/d3.mp3"]))
             pygame.mixer.music.play(-1)
-            # pygame.mixer.music.set_volume(0.1)
+            pygame.mixer.music.set_volume(music_volume)
+            series_number = 0
             state_mode = 2
         elif Math_line.one_line(co[1][0], co[1][1],co[2][0], co[2][1],co[3][0], co[3][1]) \
                 and Math_line.one_line(co[1][0], co[1][1], co[2][0], co[2][1], co[4][0], co[4][1])\
@@ -176,7 +187,8 @@ while doing:
             start_time_music = time.time()
             pygame.mixer.music.load(random.choice(["data/d1.mp3", "data/d4.mp3"]))
             pygame.mixer.music.play(-1)
-            # pygame.mixer.music.set_volume(0.1)
+            pygame.mixer.music.set_volume(music_volume)
+            series_number = 1
             state_mode = 2
         elif Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[4][0], co[4][1]) \
                 and Math_line.one_line(co[2][0], co[2][1], co[3][0], co[3][1], co[5][0], co[5][1]) \
@@ -184,11 +196,20 @@ while doing:
             start_time_music = time.time()
             pygame.mixer.music.load(random.choice(["data/d1.mp3", "data/d2.mp3"]))
             pygame.mixer.music.play(-1)
-            # pygame.mixer.music.set_volume(0.1)
+            pygame.mixer.music.set_volume(music_volume)
+            series_number = 2
             state_mode = 2
+
     screen.blit(decor, (0, 0))
     if state_mode == 2:
+
+        for ball_number in range(series_number, series_number+5):
+            pygame.draw.circle(screen,(0,0,190),(co[ball_number][0],co[ball_number][1]+51),35, width=2)
+            pygame.draw.circle(screen,(190,190,0),(co[ball_number][0],co[ball_number][1]+51),33, width=2)
+
+        screen.blit(decor, (0, 0))
         screen.blit(vin, (0, 0))
+
     pygame.display.flip()
     all_sprites.update()
 pygame.quit()
